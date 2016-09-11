@@ -1,10 +1,13 @@
 <head>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script type="text/javascript" src="treedata.json"></script>
-  <title>meteorDir</title>
-  
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.bundle.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.bundle.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+  <title>Internet of Trees</title>
 </head>
 
 <body>
@@ -13,57 +16,177 @@
 </body>
 
 <template name="editSidebar">
-  <div id = "sidebarContainer" style = "height:100%" class = "col-md-5">
+  <div id = "sidebarContainer" style = "height:100%" class = "col-md-4">
 	<h1>Catalog A Tree</h1>
-	<select>
+	<div class = "form-inline">
+	<select class = "col-md-9 form-control" id = "TreeList">
+	<option>New Tree</option>
 		{{#each trees}}
-			<option value = {{this.TreeId}}>{{this.TreeId}}</option>
+			<option value = {{this.TreeID}}>{{this.TreeID}}</option>
 		{{/each}}
 	</select>
-	<form>
-	<div class="form-group">
-	<label for="ID"> Tree ID </label>
-	<input style="width:30%;margin-bottom:-20px;" type = "ID" class="form-control" id="ID" placeholder= "ID" ><br>
+	<button id = "removeTree" class = "form-control btn btn-danger">X</button>
 	</div>
-	<div class="form-group">
-	<label for="Tree-Species"> Tree Species </label>
-	<input style="width:30%;margin-bottom=-20px" type = "Species" class = "form-control"  id="Tree-Species" placeholder = "Tree Species">
-	</div>
-	<div class="form-group">
-	<label for="location"> Location </label>
-	<input style="width:30%;margin-bottom=-20px" type = "Species" class = "form-control"  id="Tree-Species" placeholder = "Tree Location">
-	</div>
-	<div class="form-group">
-	<label for="Size"> Size </label>
-	<input style="width:30%;margin-bottom=-20px" type = "Species" class = "form-control"  id="Tree-Species" placeholder = "Tree Height">
-	</div>
-	<div class="form-group">
-	<label for="Size"> Diameter </label>
-	<input style="width:30%;margin-bottom=-20px" type = "Diameter" class = "form-control"  id="Tree-Species" placeholder = "Tree Diameter">
-	</div>
-	<!-- Maintenance needs -->
-	Clean <input type = "checkbox"><br>
-	Weed <input type = "checkbox"><br>
-	Prune <input type = "checkbox"><br>
-	<!--Conditions -->
-	Canker <input type = "checkbox"><br>
-	Crack <input type = "checkbox"><br>
-	Cavities<input type = "checkbox"><br>
-	Decay <input type = "checkbox"><br>
-	Gall <input type = "checkbox"><br>
-	Insects<input type = "checkbox"><br>
-	<button id = "catalogTree">Submit</button>
-	</form>
+		<form>
+		<div class="form-group">
+		<label for="ID"> Tree ID </label>
+		<input value = {{curTree.TreeID}} style="width:70%;margin-bottom:-20px;" type = "ID" class="form-control" id="ID" placeholder= "ID" ><br>
+		</div>
+		<div class="form-group">
+		<label for="Tree-Species"> Tree Species </label>
+		<input value = {{curTree.Species}} style="width:70%;margin-bottom=-20px" type = "Species" class = "form-control"  id="Tree-Species" placeholder = "Tree Species">
+		</div>
+		<div class="form-group">
+		<label for="Location"> Location </label>
+		<input value = {{curTree.location}} style="width:70%;margin-bottom=-20px" type = "Species" class = "form-control"  id="Location" placeholder = "Tree Location">
+		</div>
+		<div class="form-group">
+		<label for="Size"> Size </label>
+		<input value = {{curTree.size}} style="width:70%;margin-bottom=-20px" type = "Species" class = "form-control"  id="Size" placeholder = "Tree Height">
+		</div>
+		<div class="form-group">
+		<label for="Diameter"> Diameter </label>
+		<input value = {{curTree.diameter}} style="width:70%;margin-bottom=-20px" type = "Diameter" class = "form-control"  id="Diameter" placeholder = "Tree Diameter">
+		</div>
+		</form>
+		<!-- Maintenance needs -->
+		<h3> Maintenance </h3>
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="Clean"> Clean? </label>
+				<input id="Clean" type = "checkbox" {{shouldBeChecked curTree.clean}} class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="Weed"> Weed? </label>
+				<input id="Weed" type = "checkbox" {{shouldBeChecked curTree.weed}} class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="Prune"> Prune? </label>
+				<input id="Prune" type="checkbox" {{shouldBeChecked curTree.prune}} class="form-control">
+			</div>
+		</form>
+		<h3>Conditions</h3>
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="Canker"> Canker? </label>
+				<input id="Canker" type="checkbox" {{shouldBeChecked curTree.canker}} class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="Crack"> Crack? </label>
+				<input id="Crack" type="checkbox" {{shouldBeChecked curTree.crack}} class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="Cavities"> Cavities? </label>
+				<input id="Cavities" type="checkbox" {{shouldBeChecked curTree.Cavities}} class="form-control">
+			</div><br>
+			<div class="form-group">
+				<label for="Decay"> Decay? </label>
+				<input id="Decay" type="checkbox" {{shouldBeChecked curTree.Decay}} class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="Gall"> Gall? </label>
+				<input id="Gall" type="checkbox" {{shouldBeChecked curTree.Gall}} class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="Insects"> Insects? </label>
+				<input id="Insects" type="checkbox" {{shouldBeChecked curTree.insects}} class="form-control">
+			</div><br>
+			<div class="form-group">
+			<label for="Comments"> Comments </label>
+			<input value = {{curTree.Comments}} style="width:70%;margin-bottom=-20px" type = "Diameter" class = "form-control"  id="Comments" placeholder = "Comments">
+			</div>
+			<div class="form-group">
+				<button style = "position:absolute; right:30%;bottom:10px;" class = "btn btn-primary" id = "catalogTree">Submit</button>
+			</div>
+		</form>
   </div>
 </template>
 
-<template name="dataAnalysis">
-  <h2>Learn Meteor!</h2>
-  <ul>
-    <li><a href="https://www.meteor.com/try" target="_blank">Do the Tutorial</a></li>
-    <li><a href="http://guide.meteor.com" target="_blank">Follow the Guide</a></li>
-    <li><a href="https://docs.meteor.com" target="_blank">Read the Docs</a></li>
-    <li><a href="https://forums.meteor.com" target="_blank">Discussions</a></li>
-  </ul>
+<template name="dataAnalysis" style = "height:100%" class="col-md-8">
+<canvas id="myDoughnutChart" width="400" height="400"></canvas>
+<script>
+var ctx = document.getElementById("myDoughnutChart");
+var myDoughnutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+	
+		labels: [
+			"American Sycamore",
+			"Red Maple",
+			"Honey Locust",
+			"White Oak",
+			"American Elm",
+			"Cherokee Princess Dogwood",
+			"Winterking Hawthorn",
+			"Serviceberry",
+			"Redbud"
+		],
+		datasets: [
+			{
+				data: [116,81,52,25,29,64,57,65,11],
+				backgroundColor: [
+					"#FF6600",
+					"#ff0000",
+					"#ffff00",
+					"#00ffff",
+					"#00ff00",
+					"#009933",
+					"#ffff99",
+					"#663300",
+					"#ff3300"
+					
+				]
+			}]
+	}
+	});
+</script>
+
+<canvas stye="margin-top:20px;" id="myRadarChart" width = "1000" height="1000"></canvas>
+<script>
+var ctx = document.getElementById("myRadarChart");
+/*var dataMap = 
+labels: ["Clean","Weed","prune","canker","crack","cavities","Decay","Gall","Insects"],
+    datasets: [ 
+		{
+            fillColor: "rgba(220,220,220,0.5)",
+			strokerColor : "rgba(220,220,220,1)",
+            data: [0, 4, 1, 1, 2, 1, 1,1.1]
+        },
+		{
+			fillColor: "rgba(151,187,205,0.5)",
+			strokeColor: "rgba(151,187,205,1)",
+			data: [0, 1, 6, 2, 0, 0, 1,1,8 ]
+		}
+	]
+ };
+var myRadarChart = new Chart(ctx).Radar(dataMap); */
+
+var radarData = {
+	labels : ["Clean","Weed","prune","canker","crack","cavities","Decay","Gall","Insects"],
+	datasets : [
+		{
+			label: "American Elm Analysis",
+			 fillColor: "rgba(102,45,145,.1)",
+			 strokeColor: "rgba(102,45,145,1)",
+			pointColor : "rgba(220,220,220,1)",
+			pointStrokeColor : "#fff",
+			data : [0, 4, 1, 1, 2, 1, 1,1,1]
+		},
+		{
+			label: "White Oak Analysis",
+	        fillColor: "rgba(220,220,220,.1)",
+            strokeColor: "rgba(63,169,245,1)",
+			pointColor : "rgba(151,187,205,1)",
+			pointStrokeColor : "#fff",
+			data : [0, 1, 6, 2, 0, 0, 1,1,8 ]
+		}
+	]
+};
+
+var radarChart = new Chart(ctx, {
+	type:'radar',
+	data: radarData,
+});
+</script>
 </template>
 

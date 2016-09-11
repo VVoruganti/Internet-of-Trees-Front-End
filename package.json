@@ -1,5 +1,5 @@
 {
-  "name": "meteorDir",
+  "name": "simple-todos",
   "private": true,
   "scripts": {
     "start": "meteor run"
